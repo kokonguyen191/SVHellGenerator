@@ -12,7 +12,7 @@ public class SVGenerate {
 	protected int m_rate = -1;
 	protected String FILENAME = null;
 	protected String NEWFILE = null;
-	protected ParseBeats m_pb = null;
+	protected OsuBeatMapParser m_pb = null;
 	protected ArrayList<Integer> m_beats = null;
 	protected ArrayList<Double> m_offsets = null;
 	protected ArrayList<Double> m_msPerBeat = null;
@@ -27,64 +27,6 @@ public class SVGenerate {
 	protected double secondSV = -1.0;
 	protected double firstSVText = -1.0;
 	protected double secondSVText = -1.0;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param fileName
-	 *            osu beatmap input
-	 * @param rate
-	 *            sv rate / interval
-	 * @throws Exception
-	 */
-	SVGenerate(String fileName, int rate) throws Exception {
-		System.out.println("Reading file...");
-		if (rate <= 1) {
-			throw new IllegalArgumentException("Rate lower than or equal to 1.");
-		} else {
-
-			// Parameter initialization
-			m_rate = rate;
-			FILENAME = fileName;
-
-			ParseBeats m_pb = new ParseBeats(fileName);
-			m_beats = m_pb.getBeats();
-			m_offsets = m_pb.getOffsets();
-			m_msPerBeat = m_pb.getMsPerBeat();
-			m_inheritance = m_pb.getInheritance();
-			m_sounds = m_pb.getSounds();
-			m_volume = m_pb.getVolume();
-			m_kiai = m_pb.getKiai();
-
-			m_svs = new ArrayList<String>();
-			NEWFILE = m_pb.m_newFile;
-
-			// Calculate SV
-			firstSV = 0.01;
-			secondSV = rate - 0.01 * (rate - 1);
-			firstSVText = -100 / firstSV;
-			secondSVText = -100 / secondSV;
-
-			// Get main tempo
-			double interval = m_offsets.get(0);
-			mainMsPerBeat = m_msPerBeat.get(0);
-			for (int i = 0; i < m_msPerBeat.size() - 1; i++) {
-				if (m_offsets.get(i + 1) - m_offsets.get(i) > interval) {
-					mainMsPerBeat = m_msPerBeat.get(i);
-					interval = m_offsets.get(i + 1) - m_offsets.get(i);
-				}
-			}
-
-			System.out.println("=============================================================");
-			System.out.println("Main tempo is " + (int) Math.floor(60000 / mainMsPerBeat) + " BPM.");
-			System.out.println("If the main tempo is wrong, please use the other constructor.");
-			System.out.println("=============================================================");
-
-			System.out.println("File read.");
-			// Do the job
-			generateWithUninheritedPoints();
-		}
-	}
 
 	/**
 	 * 
@@ -106,7 +48,7 @@ public class SVGenerate {
 			m_rate = rate;
 			FILENAME = fileName;
 
-			ParseBeats m_pb = new ParseBeats(fileName);
+			OsuBeatMapParser m_pb = new OsuBeatMapParser(fileName);
 			m_beats = m_pb.getBeats();
 			m_offsets = m_pb.getOffsets();
 			m_msPerBeat = m_pb.getMsPerBeat();
@@ -128,9 +70,36 @@ public class SVGenerate {
 			mainMsPerBeat = 60000 / BPM;
 
 			System.out.println("File read.");
-			// Do the job
-			generate();
 		}
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param fileName
+	 *            osu beatmap input
+	 * @param rate
+	 *            sv rate / interval
+	 * @throws Exception
+	 */
+	SVGenerate(String fileName, int rate) throws Exception {
+		this(fileName, rate, 0);
+
+		// Get main tempo
+		double interval = m_offsets.get(0);
+		mainMsPerBeat = m_msPerBeat.get(0);
+		for (int i = 0; i < m_msPerBeat.size() - 1; i++) {
+			if (m_offsets.get(i + 1) - m_offsets.get(i) > interval) {
+				mainMsPerBeat = m_msPerBeat.get(i);
+				interval = m_offsets.get(i + 1) - m_offsets.get(i);
+			}
+		}
+
+		System.out.println("=============================================================");
+		System.out.println("Main tempo is " + (int) Math.floor(60000 / mainMsPerBeat) + " BPM.");
+		System.out.println("If the main tempo is wrong, please use the other constructor.");
+		System.out.println("=============================================================");
+
 	}
 
 	/**
@@ -169,53 +138,6 @@ public class SVGenerate {
 			String secondSVToAdd = Double.toString(secondOffset) + "," + secondSVTextText + timingPointData;
 
 			// Add first SV
-			m_svs.add(firstSVToAdd);
-			m_svs.add(secondSVToAdd);
-		}
-		System.out.println("SVs successfully generated...");
-	}
-
-	/**
-	 * Generate SVs with uninherited timing points for more visual effects
-	 */
-	protected void generateWithUninheritedPoints() {
-		System.out.println("Commence to generate SVs...");
-		int count = 0;
-		double currentMsPB = m_msPerBeat.get(count);
-		double svMultiplier = mainMsPerBeat / (60000 / currentMsPB);
-		double nextOffset = m_offsets.get(count + 1);
-
-		String firstSVTextText = Double.toString(firstSVText * svMultiplier);
-		String secondSVTextText = Double.toString(secondSVText * svMultiplier);
-
-		String timingPointData = ",4,2," + m_sounds.get(count) + "," + m_volume.get(count) + ",0," + m_kiai.get(count);
-		String fun = "," + currentMsPB + ",4,2," + m_sounds.get(count) + "," + m_volume.get(count) + ",1,"
-				+ m_kiai.get(count);
-
-		for (int i = 0; i < m_beats.size() - 1; i++) {
-			double firstOffset = m_beats.get(i);
-
-			// Update if next offset is reached
-			if (firstOffset >= nextOffset) {
-				count++;
-				nextOffset = m_offsets.get(count + 1);
-				currentMsPB = m_msPerBeat.get(count);
-				svMultiplier = mainMsPerBeat / (60000 / currentMsPB);
-				firstSVTextText = Double.toString(firstSVText / svMultiplier);
-				secondSVTextText = Double.toString(secondSVText / svMultiplier);
-				timingPointData = ",4,2," + m_sounds.get(count) + "," + m_volume.get(count) + ",0," + m_kiai.get(count);
-				fun = "," + currentMsPB + ",4,2," + m_sounds.get(count) + "," + m_volume.get(count) + ",1,"
-						+ m_kiai.get(count);
-			}
-
-			int interval = m_beats.get(i + 1) - m_beats.get(i);
-			double secondOffset = firstOffset + interval * (m_rate - 1) / m_rate;
-
-			String firstSVToAdd = Double.toString(firstOffset) + "," + firstSVTextText + timingPointData;
-			String secondSVToAdd = Double.toString(secondOffset) + "," + secondSVTextText + timingPointData;
-
-			// Add first SV
-			m_svs.add(Double.toString(firstOffset) + fun);
 			m_svs.add(firstSVToAdd);
 			m_svs.add(secondSVToAdd);
 		}
@@ -273,7 +195,10 @@ public class SVGenerate {
 			sw.reset();
 			sw.start();
 			// Put your map here
-			SVGenerate svg = new SVGenerate("", 16);
+			SVGenerate svg = new SVGenerate(
+					"Camellia - chrono diver -fragment- (Camellia's crossroads of chrono remix) (Abraxos) [TemporalSubmergence].osu",
+					16);
+			svg.generate();
 			svg.writeSV();
 			sw.stop();
 			System.out.println("SVs generated in " + sw.getTime() + "s.");

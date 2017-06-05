@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ParseBeats {
+public class OsuBeatMapParser {
 
 	private static String FILENAME = null;
 	private Set<Integer> m_beats = null;
@@ -21,7 +21,7 @@ public class ParseBeats {
 	private ArrayList<Integer> m_kiai = null;
 	public String m_newFile = null;
 
-	ParseBeats(String fileName) throws Exception {
+	OsuBeatMapParser(String fileName) throws Exception {
 		if (!fileName.substring(fileName.length() - 3, fileName.length()).equals("osu")) {
 			throw new IllegalArgumentException("Not osu beatmap.");
 		} else {
@@ -176,7 +176,7 @@ public class ParseBeats {
 
 	public static void main(String[] args) {
 		try {
-			ParseBeats pb = new ParseBeats(
+			OsuBeatMapParser pb = new OsuBeatMapParser(
 					"Camellia - chrono diver -fragment- (Camellia's crossroads of chrono remix) (Abraxos) [TemporalSubmergence].osu");
 			ArrayList<Double> pbm = pb.getMsPerBeat();
 			ArrayList<Double> pbo = pb.getOffsets();
