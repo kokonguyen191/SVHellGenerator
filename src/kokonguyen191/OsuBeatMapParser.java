@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class OsuBeatMapParser {
+public class OsuBeatmapParser {
 
 	private static String FILENAME = null;
 	private Set<Integer> m_beats = null;
@@ -21,7 +21,7 @@ public class OsuBeatMapParser {
 	private ArrayList<Integer> m_kiai = null;
 	public String m_newFile = null;
 
-	OsuBeatMapParser(String fileName) throws Exception {
+	OsuBeatmapParser(String fileName) throws Exception {
 		if (!fileName.substring(fileName.length() - 3, fileName.length()).equals("osu")) {
 			throw new IllegalArgumentException("Not osu beatmap.");
 		} else {
@@ -100,8 +100,8 @@ public class OsuBeatMapParser {
 			}
 
 			// Before hit objects
-			String thisShitO = "";
-			String thisShitM = "";
+			String lastOffset = "";
+			String lastMspb = "";
 			while (!strLine.equals("[HitObjects]")) {
 				strLine = br.readLine();
 				String[] parts = strLine.split(",");
@@ -113,18 +113,18 @@ public class OsuBeatMapParser {
 					m_sounds.add(Integer.parseInt(parts[4]));
 					m_volume.add(Integer.parseInt(parts[5]));
 					m_kiai.add(Integer.parseInt(parts[7]));
-					thisShitO = parts[0];
-					thisShitM = parts[1];
+					lastOffset = parts[0];
+					lastMspb = parts[1];
 					bw.write(strLine + System.getProperty("line.separator"));
 				} else if (parts.length == 8 && parts[6].equals("0")) {
-					if (!thisShitO.equals(parts[0])) {
+					if (!lastOffset.equals(parts[0])) {
 						m_offsets.add(Double.parseDouble(parts[0]));
-						m_msPerBeat.add(Double.parseDouble(thisShitM));
+						m_msPerBeat.add(Double.parseDouble(lastMspb));
 						m_inheritance.add(false);
 						m_sounds.add(Integer.parseInt(parts[4]));
 						m_volume.add(Integer.parseInt(parts[5]));
 						m_kiai.add(Integer.parseInt(parts[7]));
-						thisShitO = parts[0];
+						lastOffset = parts[0];
 					}
 				}
 			}
@@ -156,9 +156,9 @@ public class OsuBeatMapParser {
 				bw.write(strLine + System.getProperty("line.separator"));
 			}
 
-			if ((double) lastBeat > Double.parseDouble(thisShitO)) {
+			if ((double) lastBeat > Double.parseDouble(lastOffset)) {
 				m_offsets.add((double) lastBeat + 1);
-				m_msPerBeat.add(Double.parseDouble(thisShitM));
+				m_msPerBeat.add(Double.parseDouble(lastMspb));
 				m_inheritance.add(true);
 				m_sounds.add(0);
 				m_volume.add(0);
@@ -176,8 +176,8 @@ public class OsuBeatMapParser {
 
 	public static void main(String[] args) {
 		try {
-			OsuBeatMapParser pb = new OsuBeatMapParser(
-					"Camellia - chrono diver -fragment- (Camellia's crossroads of chrono remix) (Abraxos) [TemporalSubmergence].osu");
+			OsuBeatmapParser pb = new OsuBeatmapParser(
+					"");
 			ArrayList<Double> pbm = pb.getMsPerBeat();
 			ArrayList<Double> pbo = pb.getOffsets();
 			ArrayList<Boolean> pbi = pb.getInheritance();

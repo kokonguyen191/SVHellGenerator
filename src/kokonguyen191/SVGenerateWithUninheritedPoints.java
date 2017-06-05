@@ -106,7 +106,6 @@ public class SVGenerateWithUninheritedPoints extends SVGenerate {
 			String firstSVToAdd = Double.toString(firstOffset) + "," + firstSVTextText + timingPointData;
 			String secondSVToAdd = Double.toString(secondOffset) + "," + secondSVTextText + timingPointData;
 
-			// Add first SV
 			if (m_snap == -1 || Math.abs((m_snap * ((firstOffset - lastOffset) / currentMsPB)
 					- Math.round(m_snap * ((firstOffset - lastOffset) / currentMsPB)))) < 0.02) {
 				m_svs.add(Double.toString(firstOffset) + fun);
@@ -125,7 +124,7 @@ public class SVGenerateWithUninheritedPoints extends SVGenerate {
 			sw.start();
 			// Put your map here
 			SVGenerateWithUninheritedPoints svg = new SVGenerateWithUninheritedPoints(
-					"Camellia - chrono diver -fragment- (Camellia's crossroads of chrono remix) (Abraxos) [TemporalSubmergence].osu",
+					"",
 					16, 4);
 			svg.generate();
 			svg.writeSV();
