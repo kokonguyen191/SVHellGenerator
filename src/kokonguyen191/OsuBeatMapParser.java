@@ -3,8 +3,10 @@ package kokonguyen191;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,7 +40,11 @@ public class OsuBeatmapParser {
 			m_kiai = new ArrayList<Integer>();
 
 			// Do the thing
-			parseBeats();
+			if (maniaCheck()) {
+				parseBeats();
+			} else {
+				throw new IllegalArgumentException("Not mania map or already is SV Hell.");
+			}
 		}
 	}
 
@@ -72,6 +78,41 @@ public class OsuBeatmapParser {
 		return m_kiai;
 	}
 
+	private boolean maniaCheck() throws Exception {
+
+		File inputFile = new File(FILENAME);
+
+		BufferedReader br = new BufferedReader(new FileReader(inputFile));
+
+		String strLine;
+
+		while ((strLine = br.readLine()) != null) {
+			if (strLine.startsWith("Mode")) {
+				// If not mania map
+				if (!strLine.endsWith("3")) {
+					br.close();
+					return false;
+				}
+				break;
+			}
+		}
+		
+		while ((strLine = br.readLine()) != null) {
+			if (strLine.startsWith("Version")) {
+				// If not mania map
+				if (strLine.endsWith("SV Hell")) {
+					br.close();
+					return false;
+				} else {
+					br.close();
+					return true;
+				}
+			}
+		}
+		
+		return true;
+	}
+
 	private void parseBeats() {
 		try {
 
@@ -91,8 +132,8 @@ public class OsuBeatmapParser {
 			// Before timing points
 			while (!strLine.equals("[TimingPoints]")) {
 				strLine = br.readLine();
-				String[] parts = strLine.split(":");
-				if (parts.length == 2 && parts[0].equals("Version")) {
+
+				if (strLine.startsWith("Version")) {
 					bw.write(strLine + " SV Hell" + System.getProperty("line.separator"));
 				} else {
 					bw.write(strLine + System.getProperty("line.separator"));
@@ -176,8 +217,7 @@ public class OsuBeatmapParser {
 
 	public static void main(String[] args) {
 		try {
-			OsuBeatmapParser pb = new OsuBeatmapParser(
-					"");
+			OsuBeatmapParser pb = new OsuBeatmapParser("");
 			ArrayList<Double> pbm = pb.getMsPerBeat();
 			ArrayList<Double> pbo = pb.getOffsets();
 			ArrayList<Boolean> pbi = pb.getInheritance();

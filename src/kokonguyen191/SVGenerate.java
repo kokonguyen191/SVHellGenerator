@@ -49,6 +49,7 @@ public class SVGenerate {
 			FILENAME = fileName;
 
 			OsuBeatmapParser m_pb = new OsuBeatmapParser(fileName);
+
 			m_beats = m_pb.getBeats();
 			m_offsets = m_pb.getOffsets();
 			m_msPerBeat = m_pb.getMsPerBeat();
@@ -196,8 +197,7 @@ public class SVGenerate {
 			sw1.start();
 
 			// Put your map here
-			SVGenerate svg = new SVGenerate(
-					"", 16);
+			SVGenerate svg = new SVGenerate("Ceui - COLORFUL DAYS!! (SamiPale) [Hard].osu", 16);
 			svg.generate();
 			svg.writeSV();
 
