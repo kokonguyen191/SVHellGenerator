@@ -3,10 +3,8 @@ package kokonguyen191;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -105,11 +103,12 @@ public class OsuBeatmapParser {
 					return false;
 				} else {
 					br.close();
+					System.out.println("Beatmap: " + inputFile.getAbsolutePath());
 					return true;
 				}
 			}
 		}
-		
+		br.close();
 		return true;
 	}
 

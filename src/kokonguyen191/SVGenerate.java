@@ -27,7 +27,11 @@ public class SVGenerate {
 	protected double secondSV = -1.0;
 	protected double firstSVText = -1.0;
 	protected double secondSVText = -1.0;
-
+	
+	public SVGenerate() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	/**
 	 * 
 	 * @param fileName
@@ -189,37 +193,6 @@ public class SVGenerate {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void runFile(File file, int rate) {
-		try {
-			StopWatch sw = new StopWatch();
-			sw.reset();
-			sw.start();
-			// Put your map here
-			SVGenerate svg = new SVGenerate(file.getCanonicalPath(), rate); //D:\\Games\\osu!\\Songs\\190954 Aoi Eir - IGNITE (TV size ver)\\Aoi Eir - IGNITE (TV size ver.) (victorica_db) [4K LV.6].osu
-			svg.writeSV();
-			sw.stop();
-			System.out.println("SVs generated in " + sw.getTime() + "s.");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void runFolder(File folder, int rate) {
-		try {
-			File [] list = folder.listFiles();
-			for(File stuff : list) {
-				if(stuff.isDirectory()) {
-					runFolder(stuff, rate);
-				}
-				else if(stuff.getCanonicalPath().substring(stuff.getCanonicalPath().length() - 3, stuff.getCanonicalPath().length()).equals("osu")) {
-					runFile(stuff, rate);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static void main(String[] args) {
 		try {
@@ -228,7 +201,7 @@ public class SVGenerate {
 			sw1.start();
 
 			// Put your map here
-			SVGenerate svg = new SVGenerate("Ceui - COLORFUL DAYS!! (SamiPale) [Hard].osu", 16);
+			SVGenerate svg = new SVGenerate("", 16);
 			svg.generate();
 			svg.writeSV();
 
