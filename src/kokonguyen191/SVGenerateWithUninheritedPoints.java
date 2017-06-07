@@ -1,5 +1,7 @@
 package kokonguyen191;
 
+import java.io.File;
+
 public class SVGenerateWithUninheritedPoints extends SVGenerate {
 
 	protected double m_snap = -1;
@@ -117,6 +119,41 @@ public class SVGenerateWithUninheritedPoints extends SVGenerate {
 		}
 		System.out.println("SVs successfully generated...");
 	}
+	
+	public static void runFile(File file, int rate, double BPM) {
+		try {
+			StopWatch sw = new StopWatch();
+			sw.reset();
+			sw.start();
+			SVGenerateWithUninheritedPoints svg = new SVGenerateWithUninheritedPoints(
+					file.getCanonicalPath(),
+					rate, BPM);
+			svg.generate();
+			svg.writeSV();
+			sw.stop();
+			System.out.println("SVs generated in " + sw.getTime() + "s.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void runFolder(File folder, int rate, double BPM) {
+		try {
+			File [] list = folder.listFiles();
+			for(File stuff : list) {
+				if(stuff.isDirectory()) {
+					runFolder(stuff, rate, BPM);
+				}
+				else if(stuff.getCanonicalPath().substring(
+						stuff.getCanonicalPath().length() - 3, stuff.getCanonicalPath().length()).equals("osu")) {
+					runFile(stuff, rate, BPM);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 		try {
 			StopWatch sw = new StopWatch();
