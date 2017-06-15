@@ -3,7 +3,7 @@ Make any osu!mania maps go full SV. A little project I coded when I was bored.
 
 Just run OsuSVHellGui from your favorite Java IDE. Eclipse recommended.
 
-!(http://i.imgur.com/IcrzQxy.png)
+![ ](http://i.imgur.com/IcrzQxy.png)
 
 'Select folder' will recursively search all subfolders for beatmaps.
 
